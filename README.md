@@ -75,6 +75,16 @@ curl -X POST http://localhost:3000/rpc/1 \
 - Queries with numeric block parameters are cached for `HISTORICAL_TTL` seconds (default: 30)
 - Batch requests use the most conservative TTL across all items
 
+## Rate Limiting
+
+Rate limiting is configured via the Vercel Dashboard, not in code or `vercel.json`.
+
+Vercel's WAF rate limiting runs at the edge, before the function executes, providing zero-latency protection against abuse.
+
+**Setup:** Project → Firewall → Configure → New Rule → Rate Limit
+
+**Docs:** https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting
+
 ## Usage with Libraries
 
 ```typescript
