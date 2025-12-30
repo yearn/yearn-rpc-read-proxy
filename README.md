@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Yearn RPC Read Proxy
 
-## Getting Started
+A minimal, edge-cached read-only proxy for Ethereum JSON-RPC requests.
 
-First, run the development server:
+## Running
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Description | Default |
+| --- | --- | --- |
+| `RPC_URI_FOR_[chainId]` | Upstream RPC URL for chain | - |
+| `LATEST_TTL` | Cache TTL for `latest` block queries (seconds) | `3` |
+| `HISTORICAL_TTL` | Cache TTL for numeric block queries (seconds) | `30` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Example:
+```bash
+RPC_URI_FOR_1=https://eth.llamarpc.com bun dev
+```
 
-## Learn More
+## Endpoint
 
-To learn more about Next.js, take a look at the following resources:
+```
+POST /rpc/[chainId]
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Supported Methods
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Method | Description |
+| --- | --- |
+| `eth_blockNumber` | Returns the current block number |
+| `eth_chainId` | Returns the chain ID |
+| `eth_gasPrice` | Returns the current gas price |
+| `eth_call` | Executes a call without creating a transaction |
+| `eth_getBalance` | Returns the balance of an address |
+| `eth_getCode` | Returns the code at an address |
+| `eth_getStorageAt` | Returns storage at a position |
+| `eth_getBlockByNumber` | Returns block by number |
+| `eth_getBlockByHash` | Returns block by hash |
+| `eth_getTransactionByHash` | Returns transaction by hash |
+| `eth_getTransactionReceipt` | Returns transaction receipt |
+| `eth_getTransactionCount` | Returns transaction count (nonce) |
+| `eth_getLogs` | Returns logs matching filter |
+| `eth_estimateGas` | Estimates gas for a transaction |
 
-## Deploy on Vercel
+## Example Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+curl -X POST http://localhost:3000/rpc/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_blockNumber",
+    "params": [],
+    "id": 1
+  }'
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Example Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x134a5b2"
+}
+```
+
+## Caching
+
+- Queries with `latest`, `pending`, or absent block parameters are cached for `LATEST_TTL` seconds (default: 3)
+- Queries with numeric block parameters are cached for `HISTORICAL_TTL` seconds (default: 30)
+- Batch requests use the most conservative TTL across all items
+
+## Usage with Libraries
+
+```typescript
+// viem
+const client = createPublicClient({
+  transport: http('http://localhost:3000/rpc/1')
+})
+
+// ethers
+const provider = new JsonRpcProvider('http://localhost:3000/rpc/1')
+```

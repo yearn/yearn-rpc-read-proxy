@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Yearn RPC Read Proxy",
-  description: "A minimal, cacheable read-only proxy for Ethereum JSON-RPC requests",
+  description: "A minimal, edge-cached read-only proxy for Ethereum JSON-RPC requests",
 };
 
 export default function RootLayout({
