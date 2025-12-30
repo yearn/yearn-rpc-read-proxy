@@ -248,6 +248,16 @@ async function processBatch(
   }
 }
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return new Response(null, { headers: CORS_HEADERS })
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ chainId: string }> }
@@ -258,7 +268,7 @@ export async function POST(
   if (!validateChainId(chainId)) {
     return NextResponse.json(
       jsonRpcError(null, -32602, `Invalid chain ID: ${chainId}`),
-      { status: 400 }
+      { status: 400, headers: CORS_HEADERS }
     )
   }
 
@@ -267,7 +277,7 @@ export async function POST(
   if (!upstreamRpc) {
     return NextResponse.json(
       jsonRpcError(null, -32602, `Unconfigured chain ID: ${chainId}`),
-      { status: 400 }
+      { status: 400, headers: CORS_HEADERS }
     )
   }
 
@@ -278,7 +288,7 @@ export async function POST(
   } catch {
     return NextResponse.json(
       jsonRpcError(null, -32700, 'Parse error: Invalid JSON'),
-      { status: 400 }
+      { status: 400, headers: CORS_HEADERS }
     )
   }
 
@@ -287,7 +297,7 @@ export async function POST(
     if (body.length === 0) {
       return NextResponse.json(
         jsonRpcError(null, -32600, 'Invalid request: Empty batch'),
-        { status: 400 }
+        { status: 400, headers: CORS_HEADERS }
       )
     }
 
@@ -296,14 +306,14 @@ export async function POST(
       if (!validateJsonRpcRequest(req)) {
         return NextResponse.json(
           jsonRpcError(null, -32600, 'Invalid request: Malformed JSON-RPC request in batch'),
-          { status: 400 }
+          { status: 400, headers: CORS_HEADERS }
         )
       }
     }
 
     const { responses, ttl } = await processBatch(body as JsonRpcRequest[], upstreamRpc)
     return NextResponse.json(responses, {
-      headers: { 'Cache-Control': `public, s-maxage=${ttl}, stale-while-revalidate` },
+      headers: { ...CORS_HEADERS, 'Cache-Control': `public, s-maxage=${ttl}, stale-while-revalidate` },
     })
   }
 
@@ -311,12 +321,12 @@ export async function POST(
   if (!validateJsonRpcRequest(body)) {
     return NextResponse.json(
       jsonRpcError(null, -32600, 'Invalid request: Malformed JSON-RPC request'),
-      { status: 400 }
+      { status: 400, headers: CORS_HEADERS }
     )
   }
 
   const { response, ttl } = await processRequest(body, upstreamRpc, 1)
   return NextResponse.json(response, {
-    headers: { 'Cache-Control': `public, s-maxage=${ttl}, stale-while-revalidate` },
+    headers: { ...CORS_HEADERS, 'Cache-Control': `public, s-maxage=${ttl}, stale-while-revalidate` },
   })
 }
