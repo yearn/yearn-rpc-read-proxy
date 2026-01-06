@@ -1,15 +1,16 @@
-.dev.vars
-
 # dependencies
 node_modules/
 
 # build
 dist/
+.next/
 .wrangler/
 
 # env/secrets
 .env
+.env.local
 .dev.vars
+!.env.example
 !.dev.vars.example
 
 # misc
@@ -24,3 +25,10 @@ yarn-error.log*
 # lock files (using bun)
 package-lock.json
 yarn.lock
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

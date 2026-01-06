@@ -2,14 +2,14 @@
   "name": "rpc-read-proxy",
   "version": "0.2.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "wrangler dev --remote",
-    "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "4.20251231.0",
-    "typescript": "5.9.3",
-    "wrangler": "4.54.0"
+    "dev:vercel": "bun --cwd packages/vercel dev",
+    "dev:cloudflare": "bun --cwd packages/cloudflare dev",
+    "build:vercel": "bun --cwd packages/vercel build",
+    "deploy:cloudflare": "bun --cwd packages/cloudflare deploy",
+    "typecheck": "bun --cwd packages/vercel typecheck && bun --cwd packages/cloudflare typecheck"
   }
 }
