@@ -10,3 +10,8 @@ HISTORICAL_TTL = "3600"
 routes = [
   { pattern = "rpc.yearn.fi", custom_domain = true }
 ]
+
+[observability]
+[observability.logs]
+enabled = true
+invocation_logs = true
