@@ -99,7 +99,8 @@ export function renderLandingPage(env: Env, baseUrl: string): string {
 
     <section class="mb-10">
       <h2 class="text-xl font-semibold mb-4">Example Request</h2>
-      <pre class="bg-zinc-900 rounded-lg px-4 py-3 font-mono text-sm overflow-x-auto">curl -v -X POST ${baseUrl}/chain/1 \\
+      <div class="relative">
+        <pre id="curl-example" class="bg-zinc-900 rounded-lg px-4 py-3 font-mono text-sm overflow-x-auto">curl -v -X POST ${baseUrl}/chain/1 \\
   -H "Content-Type: application/json" \\
   -d '{
     "jsonrpc": "2.0",
@@ -107,6 +108,11 @@ export function renderLandingPage(env: Env, baseUrl: string): string {
     "params": [],
     "id": 1
   }'</pre>
+        <button
+          onclick="navigator.clipboard.writeText(document.getElementById('curl-example').textContent).then(() => { this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 1500) })"
+          class="absolute top-2 right-2 px-2 py-1 text-xs bg-zinc-800 hover:bg-zinc-700 rounded text-zinc-400 hover:text-zinc-200 transition-colors"
+        >Copy</button>
+      </div>
     </section>
 
     <section class="mb-10">
