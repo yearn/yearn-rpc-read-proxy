@@ -1,6 +1,6 @@
-# rpc-read-proxy - Cloudflare Workers
+# rpc-read-proxy
 
-Cloudflare Workers implementation of the read-only Ethereum JSON-RPC proxy.
+A minimum, cached, read-only proxy for Ethereum JSON-RPC requests, optimized for frontend.
 
 ## Local Development
 
