@@ -1,69 +1,65 @@
-# rpc-read-proxy
+# rpc-read-proxy - Cloudflare Workers
 
-A minimum, cached, read-only proxy for Ethereum JSON-RPC requests, optimized for frontend.
+Cloudflare Workers implementation of the read-only Ethereum JSON-RPC proxy.
 
-## Packages
-
-| Package | Platform | Endpoint |
-| --- | --- | --- |
-| [packages/cloudflare](./packages/cloudflare) | Cloudflare Workers | `POST /chain/[chainId]` |
-| [packages/vercel](./packages/vercel) | Vercel (Next.js) | `POST /chain/[chainId]` |
-
-## Quick Start
+## Local Development
 
 ```bash
 bun i
+bun dev
 ```
 
-### Cloudflare Workers
+## Deployment
+
+### Authentication
+
+Create an API token at https://dash.cloudflare.com/profile/api-tokens with the **"Edit Cloudflare Workers"** template.
+
+### Set RPC URLs
 
 ```bash
-cp packages/cloudflare/.dev.vars.example packages/cloudflare/.dev.vars
-bun run dev:cloudflare
+cp .secrets.example .secrets  # Add your RPC URLs
+CLOUDFLARE_API_TOKEN=******** bun secrets # Upload to Cloudflare
 ```
 
-### Vercel
+### Deploy
 
 ```bash
-cp packages/vercel/.env.example packages/vercel/.env.local
-bun run dev:vercel
+CLOUDFLARE_API_TOKEN=******** bun deploy
 ```
 
-## Supported Methods
+### Cleanup
 
-| Method | Description |
-| --- | --- |
-| `eth_blockNumber` | Returns the current block number |
-| `eth_chainId` | Returns the chain ID |
-| `eth_gasPrice` | Returns the current gas price |
-| `eth_call` | Executes a call without creating a transaction |
-| `eth_getBalance` | Returns the balance of an address |
-| `eth_getCode` | Returns the code at an address |
-| `eth_getStorageAt` | Returns storage at a position |
-| `eth_getBlockByNumber` | Returns block by number |
-| `eth_getBlockByHash` | Returns block by hash |
-| `eth_getTransactionByHash` | Returns transaction by hash |
-| `eth_getTransactionReceipt` | Returns transaction receipt |
-| `eth_getTransactionCount` | Returns transaction count (nonce) |
-| `eth_getLogs` | Returns logs matching filter |
-| `eth_estimateGas` | Estimates gas for a transaction |
+Destroy personal tokens after use.
 
-## Example
+## Configuration
 
-```bash
-curl -X POST https://your-endpoint/chain/1 \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}'
+| Variable | Description | Default |
+| --- | --- | --- |
+| `RPC_URI_FOR_[chainId]` | Upstream RPC URL for chain (secret) | - |
+| `LATEST_TTL` | Cache TTL for `latest` block queries (seconds) | `3` |
+| `HISTORICAL_TTL` | Cache TTL for numeric block queries (seconds) | `3600` |
+
+TTLs are configured in `wrangler.toml`. RPC URLs are stored as secrets on Cloudflare.
+
+## Endpoint
+
+```
+POST /chain/[chainId]
 ```
 
-## Usage with Libraries
+## Caching
 
-```typescript
-// viem
-const client = createPublicClient({
-  transport: http('https://your-endpoint/chain/1')
-})
+Uses Cloudflare's Cache API to cache POST responses at the edge:
 
-// ethers
-const provider = new JsonRpcProvider('https://your-endpoint/chain/1')
-```
+- Queries with `latest`, `pending`, or absent block parameters are cached for `LATEST_TTL` seconds (default: 3)
+- Queries with numeric block parameters are cached for `HISTORICAL_TTL` seconds (default: 3600)
+- Batch requests cache each item individually for maximum cache efficiency
+
+Cache keys are generated from the chain ID, method name, and a SHA-256 hash of canonicalized parameters.
+
+## Rate Limiting
+
+Configure rate limiting via Cloudflare's WAF in the dashboard:
+
+**Setup:** Workers → your-worker → Settings → Security → Rate Limiting

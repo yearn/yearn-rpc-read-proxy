@@ -3,12 +3,10 @@ node_modules/
 
 # build
 dist/
-.next/
 .wrangler/
 
 # env/secrets
 .env
-.env.local
 .secrets
 !.secrets.example
 
@@ -18,16 +16,10 @@ dist/
 
 # debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # lock files (using bun)
 package-lock.json
 yarn.lock
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
-next-env.d.ts
