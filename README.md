@@ -32,6 +32,23 @@ CLOUDFLARE_API_TOKEN=******** bun deploy
 
 Destroy personal tokens after use.
 
+### CI/CD
+
+Pushes to `main` auto-deploy via GitHub Actions.
+
+**Setup:**
+
+1. Create a long-lived API token at https://dash.cloudflare.com/profile/api-tokens
+   - Use **"Edit Cloudflare Workers"** template
+   - Scope to your specific account
+   - No expiration (or 1 year)
+   - Name it clearly, e.g. `GitHub Actions - rpc-read-proxy`
+
+2. Add the token to GitHub repo secrets:
+   - **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `CLOUDFLARE_API_TOKEN`
+   - Value: your token
+
 ## Configuration
 
 | Variable | Description | Default |
