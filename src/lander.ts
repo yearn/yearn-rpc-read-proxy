@@ -152,14 +152,7 @@ const client = createPublicClient({
 const provider = new JsonRpcProvider('${baseUrl}/chain/1')</pre>
     </section>
 
-    <footer class="pt-8 border-t border-zinc-800 text-zinc-500 text-sm flex items-center gap-4">
-      <a
-        href="${baseUrl}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="hover:text-zinc-300 transition-colors"
-      >${baseUrl.replace('https://', '')}</a>
-      <span class="text-zinc-700">·</span>
+    <footer class="pt-8 border-t border-zinc-800 text-zinc-500 text-sm">
       <a
         href="https://github.com/yearn/yearn-rpc-read-proxy"
         target="_blank"
