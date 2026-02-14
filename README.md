@@ -77,6 +77,6 @@ Cache keys are generated from the chain ID, method name, and a SHA-256 hash of c
 
 ## Rate Limiting
 
-Configure rate limiting via Cloudflare's WAF in the dashboard:
+Configure rate limiting via Cloudflare's WAF in the dashboard at the domain level:
 
-**Setup:** Workers → your-worker → Settings → Security → Rate Limiting
+**Setup:** Domains → the proxy's public domain → Security → Security rules
