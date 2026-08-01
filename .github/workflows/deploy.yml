@@ -15,3 +15,8 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # Fail the deploy loudly if the live worker cannot serve a chain, rather
+      # than letting a missing upstream surface as 400s in users' browsers.
+      - name: Smoke test live chains
+        run: bun run smoke
