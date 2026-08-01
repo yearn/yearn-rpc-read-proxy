@@ -68,6 +68,10 @@ export const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
+  // Without this, browsers cache the preflight for only 5 seconds and re-send an
+  // OPTIONS before nearly every RPC call. Measured on yearn.fi: ~30% of requests
+  // reaching this worker were repeat preflights.
+  'Access-Control-Max-Age': '86400',
 }
 
 export function jsonRpcError(id: unknown, code: number, message: string): JsonRpcResponse {
