@@ -3,7 +3,7 @@
  * eth_chainId with its own id. Exits non-zero so a broken deploy fails CI.
  */
 const BASE = process.env.SMOKE_BASE_URL || 'https://rpc.yearn.fi'
-const CHAINS = [1, 10, 100, 137, 146, 250, 8453, 42161, 747474]
+const CHAINS = [1, 10, 100, 137, 146, 250, 4663, 8453, 42161, 747474]
 const ATTEMPTS = 3
 
 const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
