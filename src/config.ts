@@ -64,7 +64,8 @@ export const CHAIN_NAMES: Record<string, string> = {
   '81457': 'Blast',
   '747474': 'Katana',
   '146': 'Sonic',
-  '80094': 'Berachain' 
+  '80094': 'Berachain',
+  '4663': 'Robinhood'
 }
 
 export const CORS_HEADERS = {
