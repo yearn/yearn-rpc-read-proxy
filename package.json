@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "wrangler dev --remote",
     "deploy": "wrangler deploy",
-    "secrets": "grep -v '^#' .secrets | grep -v '^$' | while IFS='=' read -r key value; do echo \"$value\" | wrangler secret put \"$key\"; done",
     "typecheck": "tsc --noEmit",
     "smoke": "bun scripts/smoke.ts"
   },

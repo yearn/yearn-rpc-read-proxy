@@ -2,10 +2,6 @@ name = "rpc-read-proxy"
 main = "src/index.ts"
 compatibility_date = "2024-12-30"
 
-[vars]
-LATEST_TTL = "3"
-HISTORICAL_TTL = "3600"
-
 routes = [
   { pattern = "rpc.yearn.fi", custom_domain = true }
 ]
