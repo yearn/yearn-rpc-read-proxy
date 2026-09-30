@@ -52,8 +52,7 @@ smoke job runs `bun run smoke` against the live worker.
 | `LATEST_TTL` | Cache TTL for `latest` block queries (seconds) | `3` |
 | `HISTORICAL_TTL` | Cache TTL for numeric block queries (seconds) | `3600` |
 
-TTLs are configured in `wrangler.toml`. RPC URLs are worker secrets, managed in
-Doppler `rpc-read-proxy` / `prd`.
+TTLs and RPC URLs are worker secrets, managed in Doppler `rpc-read-proxy` / `prd`.
 
 ## Endpoint
 
