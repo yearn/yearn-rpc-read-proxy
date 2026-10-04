@@ -8,7 +8,6 @@ dist/
 # env/secrets
 .env
 .secrets
-!.secrets.example
 
 # misc
 .DS_Store

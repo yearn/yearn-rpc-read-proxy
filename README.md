@@ -11,43 +11,38 @@ bun dev
 
 ## Deployment
 
-### Authentication
+A push to `main` deploys the worker through the shared
+`yearn/yearn-gha` Cloudflare workflow, which authenticates to Doppler with
+OIDC. There is no manual deploy path and no Cloudflare token in GitHub.
 
-Create an API token at https://dash.cloudflare.com/profile/api-tokens with the **"Edit Cloudflare Workers"** template.
+### Secrets
 
-### Set RPC URLs
+The RPC URLs live in Doppler project `rpc-read-proxy`, config `prd`. Every
+deploy pushes every value in that config to the worker with
+`wrangler secret bulk` before `wrangler deploy`, so Doppler is the single
+source of truth — add or rotate an RPC URL there, then let a deploy carry it.
 
-```bash
-cp .secrets.example .secrets  # Add your RPC URLs
-CLOUDFLARE_API_TOKEN=******** bun secrets # Upload to Cloudflare
-```
+Two caveats from the shared workflow:
 
-### Deploy
+- The sync is additive. A key removed from Doppler stays on the worker until
+  someone runs `wrangler secret delete`.
+- A `wrangler secret put` made by hand is reverted on the next deploy.
 
-```bash
-CLOUDFLARE_API_TOKEN=******** bun deploy
-```
+The shared `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` come from
+Doppler `webops-shared-prod` / `cloudflare-deploy-configs`; this repository
+stores neither.
 
-### Cleanup
+### Setup
 
-Destroy personal tokens after use.
+Repository variable `DOPPLER_PRODUCTION_IDENTITY_ID` holds the production
+Doppler identity. Identity IDs are not secrets. See
+`yearn-gha/specs/doppler-cloudflare.md` for the identity's required claims.
 
 ### CI/CD
 
-Pushes to `main` auto-deploy via GitHub Actions.
-
-**Setup:**
-
-1. Create a long-lived API token at https://dash.cloudflare.com/profile/api-tokens
-   - Use **"Edit Cloudflare Workers"** template
-   - Scope to your specific account
-   - No expiration (or 1 year)
-   - Name it clearly, e.g. `GitHub Actions - rpc-read-proxy`
-
-2. Add the token to GitHub repo secrets:
-   - **Settings → Secrets and variables → Actions → New repository secret**
-   - Name: `CLOUDFLARE_API_TOKEN`
-   - Value: your token
+`push` to `main` is the only supported trigger — the shared workflow rejects
+every other event before it reaches Doppler. After the deploy, a `needs: deploy`
+smoke job runs `bun run smoke` against the live worker.
 
 ## Configuration
 
@@ -57,7 +52,7 @@ Pushes to `main` auto-deploy via GitHub Actions.
 | `LATEST_TTL` | Cache TTL for `latest` block queries (seconds) | `3` |
 | `HISTORICAL_TTL` | Cache TTL for numeric block queries (seconds) | `3600` |
 
-TTLs are configured in `wrangler.toml`. RPC URLs are stored as secrets on Cloudflare.
+TTLs and RPC URLs are worker secrets, managed in Doppler `rpc-read-proxy` / `prd`.
 
 ## Endpoint
 
